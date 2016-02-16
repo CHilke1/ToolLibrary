@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 using ToolLibrary.Models;
 
-namespace ToolLendingLibrary.Models
+namespace ToolLibrary.Models
 {
     public class Rental
     {
@@ -18,7 +18,7 @@ namespace ToolLendingLibrary.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DueDate { get; set; }
-        public int UserID { get; set; }
+        public string UserID { get; set; }
         public virtual Tool Tool { get; set; }
     }
 }

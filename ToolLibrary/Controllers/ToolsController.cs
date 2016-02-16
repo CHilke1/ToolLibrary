@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using ToolLibrary.DAL;
 using ToolLibrary.Models;
+using Microsoft.AspNet.Identity;
 
 namespace ToolLibrary.Controllers
 {
@@ -15,10 +16,30 @@ namespace ToolLibrary.Controllers
     {
         private ToolDbContext db = new ToolDbContext();
 
-        // GET: Tools
-        public ActionResult Index()
+        public ToolsController()
         {
-            return View(db.Tools.ToList());
+            //AutoMapper.Mapper.CreateMap<Tool, ToolViewModel>();
+        }
+
+        // GET: Tools
+        public ActionResult Index(int? categoryId)
+        {
+            if (categoryId == null)
+            {
+                return View(db.Tools.ToList());
+            }
+
+            var tools = db.Tools.
+                Include("Category").
+                Where(b => b.Category.Id == categoryId).
+                OrderByDescending(b => b.Name).
+                ToList();
+
+            ViewBag.SelectedCategoryId = categoryId;
+            
+            return View(tools);
+            //return View(AutoMapper.Mapper.Map<List<Tool>, List<ToolViewModel>>(tools));
+            //return View(db.Tools.Include("Category").ToList());
         }
 
         // GET: Tools/Details/5
@@ -36,6 +57,57 @@ namespace ToolLibrary.Controllers
             return View(tool);
         }
 
+        [HttpPost]
+        public ActionResult Details(FormCollection form)
+        {
+            var userId = User.Identity.GetUserId();
+            DateTime checkedOut = new DateTime();
+            DateTime dueDate = new DateTime();
+
+            if (form["txtOut"].ToString() != "")
+            {
+                checkedOut = DateTime.Parse(form["txtOut"].ToString());
+            }
+
+            if (form["txtReturn"].ToString() != "")
+            {
+                dueDate = DateTime.Parse(form["txtReturn"].ToString()); 
+            }
+            
+            if (checkedOut == default(DateTime))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if (dueDate == default(DateTime))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            int? id = Convert.ToInt16(form["id"]);
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Tool tool = db.Tools.Find(id);
+            if (tool == null)
+            {
+                return HttpNotFound();
+            }
+
+            Rental rental = new Rental();
+            rental.CheckedOut = checkedOut;
+            rental.DueDate = dueDate;
+            rental.UserID = userId;
+            rental.Tool = tool;
+            tool.IsCheckedOut = true;
+            db.Rentals.Add(rental);
+            db.SaveChanges();
+            db.Entry(tool).State = EntityState.Modified;
+            db.SaveChanges();
+            ViewBag.CheckedOut = true;
+            ViewBag.AlertMessage = "You have checked out this item.";
+            return View(tool);
+        }
+
         // GET: Tools/Create
         public ActionResult Create()
         {
@@ -45,6 +117,7 @@ namespace ToolLibrary.Controllers
         // POST: Tools/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Manufacturer,AdditionalDescription,ImageUrl,Type,Barcode,Name,Description,IsCheckedOut")] Tool tool)

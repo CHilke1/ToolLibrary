@@ -5,11 +5,27 @@
 }
 
 <h2>Details</h2>
-
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
 <div>
     <h4>Tool</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.Manufacturer)
         </dt>
@@ -31,7 +47,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.ImageUrl)
+            <img src="@Url.Content(Model.ImageUrl)" alt="Image" width="200" height="200" />
         </dd>
 
         <dt>
@@ -42,41 +58,52 @@
             @Html.DisplayFor(model => model.Type)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Barcode)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Barcode)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.IsCheckedOut)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.IsCheckedOut)
-        </dd>
-
     </dl>
+</div>
+<div id="UpdatePanel">
+
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
+<legend>Checkout Item</legend>
+@using (Ajax.BeginForm("Details", "Tools", new AjaxOptions { UpdateTargetId = "divInterestDeatils" }))
+{
+    <div id="divInterestDeatils"></div>
+    <ol>
+        <li>
+            @Html.Label("Begin Checkout")
+            @Html.TextBox("txtOut", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "datepicker" })
+        </li>
+        <li>
+            @Html.Label("Return Date")
+            @Html.TextBox("txtReturn", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "datepicker2" })
+        </li>
+        @Html.Hidden("id", @Model.Id);
+    </ol>
+    <button>Check out</button>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.AlertMessage)) {
+<script>alert("@ViewBag.AlertMessage");</script>
+} 
+
+@section Scripts{
+    <script>
+    $(function() {
+        $("#datepicker, #datepicker2").datepicker({
+            onSelect: function (dateText, inst) {
+                var dateAsString = dateText; //the first parameter of this function
+                var dateAsObject = $(this).datepicker('getDate'); //the getDate method
+            }
+        });
+     })
+    </script>
+}
+
+
+
+
+
+

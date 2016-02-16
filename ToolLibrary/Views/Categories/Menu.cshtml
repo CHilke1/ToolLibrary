@@ -1,0 +1,11 @@
+﻿@model List<ToolLibrary.Models.CategoryViewModel>
+@{
+    var selectedCategoryId = ViewBag.SelectedCategoryId;
+}
+<div class="list-group">
+    <h4 class="list-group-item-heading">Categories</h4>
+    @foreach (var category in Model)
+    {
+        <a href="@Url.Action("Index", "Tools", new { categoryId = category.Id })" class="list-group-item @if (selectedCategoryId == category.Id) { @Html.Raw("active") }">@category.Name</a>
+    }
+</div>

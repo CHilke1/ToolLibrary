@@ -17,7 +17,7 @@ namespace ToolLibrary.Models
 
         [Index(IsUnique = true)]
         [StringLength(255)]
-        public string SessionID { get; set; }
+        public string SessionId { get; set; }
         public virtual ICollection<BasketItem> BasketItems { get; set; }
     }
 }

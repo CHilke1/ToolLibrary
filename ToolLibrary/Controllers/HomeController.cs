@@ -13,6 +13,12 @@ namespace ToolLibrary.Controllers
             return View();
         }
 
+
+        public ActionResult Date()
+        {
+            return View();
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

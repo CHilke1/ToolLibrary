@@ -5,7 +5,7 @@ namespace ToolLibrary.DAL
     using System.Data.Entity;
     using System.Data.Entity.ModelConfiguration.Conventions;
     using System.Linq;
-    using ToolLendingLibrary.Models;
+
     public class ToolDbContext : DbContext
     {
         // Your context has been configured to use a 'Model1' connection string from your application's 
@@ -31,6 +31,8 @@ namespace ToolLibrary.DAL
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 
