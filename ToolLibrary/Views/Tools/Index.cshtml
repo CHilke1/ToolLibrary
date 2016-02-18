@@ -52,6 +52,9 @@ Direction:
             <th>
                 @Html.DisplayNameFor(model => model.Type)
             </th>
+            <th>
+                Availablity:
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -62,6 +65,7 @@ Direction:
             <td><span data-bind="text: Manufacturer"></span></td>
             <td><span data-bind="text: Category"></span></td>
             <td><span data-bind="text: Type"></span></td>
+            <td><div data-bind="visible: IsCheckedOut">Checked Out.</div>
             <td>
                 <a data-bind="attr: { href: '@Url.Action("Details")/' + Id }"
                    class="btn btn-info">Details</a>
@@ -88,6 +92,7 @@ Direction:
         self.Manufacturer = data.Manufacturer;
         self.Category = data.Category.Name;
         self.ImageUrl = data.ImageUrl;
+        self.IsCheckedOut = data.IsCheckedOut;
         self.Type = data.Type;
     }
 
@@ -104,12 +109,17 @@ Direction:
             Name: "Name",
             Value: ko.observable(""),
             RecordValue: function (record) { return record.Name; }
-        }];
+        },
+        { Type: "text", Name: "Description", Value: ko.observable(""), RecordValue: function (record) { return record.Description; }}
+
+        ];
         var sortOptions = [{
             Name: "Name",
             Value: "Name",
             Sort: function (left, right) { return CompareCaseInsensitive(left.name, right.name); }
-        }];
+        },
+        {Name: "Description", Value: "Description", Sort: function (left, right) {return CompareCaseInsensitive(left.name, right.name);}}
+        ];
         self.filter = new FilterModel(filters, self.customers);
         self.sorter = new SorterModel(sortOptions, self.filter.filteredRecords);
         self.pager = new PagerModel(self.sorter.orderedRecords);

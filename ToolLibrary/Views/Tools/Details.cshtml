@@ -1,4 +1,4 @@
-﻿@model ToolLibrary.Models.Tool
+﻿@model ToolLibrary.Models.DetailViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -42,8 +42,10 @@
             @Html.DisplayFor(model => model.AdditionalDescription)
         </dd>
 
-        <dt>
+        <dt>@if (Model != null && !String.IsNullOrEmpty(Model.ImageUrl))
+        {
             @Html.DisplayNameFor(model => model.ImageUrl)
+        }
         </dt>
 
         <dd>
@@ -51,54 +53,89 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Type)
+            @Html.DisplayNameFor(model => model.Due)
         </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Type)
+        <dd>@if (Model.Due == DateTime.MinValue) { <b>Item is available for checkout.</b> } else { @Html.DisplayFor(model => model.Due) }    
         </dd>
 
     </dl>
-</div>
-<div id="UpdatePanel">
-
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
-<legend>Checkout Item</legend>
-@using (Ajax.BeginForm("Details", "Tools", new AjaxOptions { UpdateTargetId = "divInterestDeatils" }))
-{
-    <div id="divInterestDeatils"></div>
-    <ol>
-        <li>
-            @Html.Label("Begin Checkout")
-            @Html.TextBox("txtOut", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "datepicker" })
-        </li>
-        <li>
-            @Html.Label("Return Date")
-            @Html.TextBox("txtReturn", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "datepicker2" })
-        </li>
-        @Html.Hidden("id", @Model.Id);
-    </ol>
-    <button>Check out</button>
-}
+<p><a id="dropdown" class="btn btn-default" href="#" role="button">Check out</a></p>
 
-@if (!string.IsNullOrEmpty(ViewBag.AlertMessage)) {
-<script>alert("@ViewBag.AlertMessage");</script>
-} 
 
+<div class="dropdownwrap">
+    <h2>Checkout Item</h2>
+    @using (Ajax.BeginForm("Details", "Tools", new AjaxOptions { UpdateTargetId = "divInterestDeatils" }))
+    {
+        <ol>
+            <li>
+                @Html.Label("Begin Checkout")
+                @Html.TextBox("txtOut", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "from" })
+            </li>
+            <li>
+                @Html.Label("Return Date")
+                @Html.TextBox("txtReturn", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "to" })
+            </li>
+            @Html.Hidden("id", @Model.Id)
+        </ol>
+        <button id="dropdown" button class="btn btn-default" type="submit">Check Out</button>
+    }
+
+   @{
+       if (Model.TriggerOnLoad == true)
+       {
+            <text>
+                <script type="text/javascript">
+                    alert('@Model.TriggerOnLoadMessage');
+                    window.location.href = '/Tools';
+                </script>
+            </text>
+       }
+
+    }
+</div>
 @section Scripts{
     <script>
-    $(function() {
-        $("#datepicker, #datepicker2").datepicker({
-            onSelect: function (dateText, inst) {
-                var dateAsString = dateText; //the first parameter of this function
-                var dateAsObject = $(this).datepicker('getDate'); //the getDate method
+        var disableddates = [];
+        @if (Model.ReservedDates.Count > 0)
+        {
+            foreach (var d in Model.ReservedDates)
+            {
+                @:disableddates.push("@d.ToString("MM/dd/yyyy")");
+            };
+        }
+        var disableddates2 = ["02/17/2016", "02/18/2016"];
+
+        function DisableSpecificDates(date) {
+            var string = jQuery.datepicker.formatDate('mm/dd/yy', date);
+            return [disableddates.indexOf(string) == -1];
+        }
+
+        var dateToday = new Date();
+
+        var dates = $("#from, #to").datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            numberOfMonths: 1,
+            minDate: dateToday,
+            beforeShowDay: DisableSpecificDates,
+            onSelect: function (selectedDate) {
+                var option = this.id == "from" ? "minDate" : "maxDate",
+                    instance = $(this).data("datepicker"),
+                    date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+                dates.not(this).datepicker("option", option, date);
             }
         });
-     })
+        $(document).ready(function () {
+            $("#dropdown").click(function () {
+                $(".dropdownwrap").slideToggle();
+            });
+        });
     </script>
 }
 

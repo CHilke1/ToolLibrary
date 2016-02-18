@@ -194,7 +194,10 @@
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\RentalsController.cs" />
+    <Compile Include="Controllers\RolesAdminController.cs" />
     <Compile Include="Controllers\ToolsController.cs" />
+    <Compile Include="Controllers\UserAdminController.cs" />
     <Compile Include="DAL\ToolDbContext.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="Global.asax.cs">
@@ -216,12 +219,66 @@
     <Compile Include="Migrations\201602160002443_fix.Designer.cs">
       <DependentUpon>201602160002443_fix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602162144084_userroles.cs" />
+    <Compile Include="Migrations\201602162144084_userroles.Designer.cs">
+      <DependentUpon>201602162144084_userroles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602162213302_addroles2.cs" />
+    <Compile Include="Migrations\201602162213302_addroles2.Designer.cs">
+      <DependentUpon>201602162213302_addroles2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602162302448_try3.cs" />
+    <Compile Include="Migrations\201602162302448_try3.Designer.cs">
+      <DependentUpon>201602162302448_try3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602162308379_try4.cs" />
+    <Compile Include="Migrations\201602162308379_try4.Designer.cs">
+      <DependentUpon>201602162308379_try4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602162313032_try6.cs" />
+    <Compile Include="Migrations\201602162313032_try6.Designer.cs">
+      <DependentUpon>201602162313032_try6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602162343536_newattempt.cs" />
+    <Compile Include="Migrations\201602162343536_newattempt.Designer.cs">
+      <DependentUpon>201602162343536_newattempt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602181522060_categories.cs" />
+    <Compile Include="Migrations\201602181522060_categories.Designer.cs">
+      <DependentUpon>201602181522060_categories.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602181529184_categories2.cs" />
+    <Compile Include="Migrations\201602181529184_categories2.Designer.cs">
+      <DependentUpon>201602181529184_categories2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602181534143_categories3.cs" />
+    <Compile Include="Migrations\201602181534143_categories3.Designer.cs">
+      <DependentUpon>201602181534143_categories3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602181548378_InitialCreate1.cs" />
+    <Compile Include="Migrations\201602181548378_InitialCreate1.Designer.cs">
+      <DependentUpon>201602181548378_InitialCreate1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602181635470_category7.cs" />
+    <Compile Include="Migrations\201602181635470_category7.Designer.cs">
+      <DependentUpon>201602181635470_category7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602181647208_category8.cs" />
+    <Compile Include="Migrations\201602181647208_category8.Designer.cs">
+      <DependentUpon>201602181647208_category8.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AdminViewModel.cs" />
+    <Compile Include="Models\AspNetRoles.cs" />
+    <Compile Include="Models\AspNetUserClaims.cs" />
+    <Compile Include="Models\AspNetUserLogins.cs" />
+    <Compile Include="Models\AspNetUsers.cs" />
     <Compile Include="Models\Basket.cs" />
     <Compile Include="Models\BasketItem.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\CategoryViewModel.cs" />
+    <Compile Include="Models\DetailViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -277,6 +334,8 @@
     <Content Include="Images\attribute_image14481.jpg" />
     <Content Include="Images\attribute_image14560.jpg" />
     <Content Include="Images\attribute_image14594.jpg" />
+    <Content Include="Images\attribute_image63118.jpg" />
+    <Content Include="Images\green-hose.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -345,12 +404,28 @@
     <Content Include="Views\Categories\Index.cshtml" />
     <Content Include="Views\Categories\Menu.cshtml" />
     <Content Include="Views\Home\Date.cshtml" />
+    <Content Include="Views\UsersAdmin\Create.cshtml" />
+    <Content Include="Views\UsersAdmin\Delete.cshtml" />
+    <Content Include="Views\UsersAdmin\Details.cshtml" />
+    <Content Include="Views\UsersAdmin\Edit.cshtml" />
+    <Content Include="Views\UsersAdmin\Index.cshtml" />
+    <Content Include="Views\RolesAdmin\Create.cshtml" />
+    <Content Include="Views\RolesAdmin\Delete.cshtml" />
+    <Content Include="Views\RolesAdmin\Details.cshtml" />
+    <Content Include="Views\RolesAdmin\Edit.cshtml" />
+    <Content Include="Views\RolesAdmin\Index.cshtml" />
+    <Content Include="Views\Rentals\Create.cshtml" />
+    <Content Include="Views\Rentals\Delete.cshtml" />
+    <Content Include="Views\Rentals\Details.cshtml" />
+    <Content Include="Views\Rentals\Edit.cshtml" />
+    <Content Include="Views\Rentals\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Logic\" />
     <Folder Include="Services\" />
     <Folder Include="ViewModels\" />
+    <Folder Include="Views\Tools1\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -372,6 +447,42 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602160002443_fix.resx">
       <DependentUpon>201602160002443_fix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602162144084_userroles.resx">
+      <DependentUpon>201602162144084_userroles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602162213302_addroles2.resx">
+      <DependentUpon>201602162213302_addroles2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602162302448_try3.resx">
+      <DependentUpon>201602162302448_try3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602162308379_try4.resx">
+      <DependentUpon>201602162308379_try4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602162313032_try6.resx">
+      <DependentUpon>201602162313032_try6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602162343536_newattempt.resx">
+      <DependentUpon>201602162343536_newattempt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602181522060_categories.resx">
+      <DependentUpon>201602181522060_categories.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602181529184_categories2.resx">
+      <DependentUpon>201602181529184_categories2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602181534143_categories3.resx">
+      <DependentUpon>201602181534143_categories3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602181548378_InitialCreate1.resx">
+      <DependentUpon>201602181548378_InitialCreate1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602181635470_category7.resx">
+      <DependentUpon>201602181635470_category7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602181647208_category8.resx">
+      <DependentUpon>201602181647208_category8.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
