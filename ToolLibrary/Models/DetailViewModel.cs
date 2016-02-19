@@ -29,6 +29,7 @@ namespace ToolLibrary.Models
         public bool? TriggerOnLoad { get; set; }
         public string TriggerOnLoadMessage { get; set; }
         public string RedirectUrl { get; set; }
+        public int CategoryId { get; set; }
         public List<DateTime> ReservedDates { get; set; }
     }
 }

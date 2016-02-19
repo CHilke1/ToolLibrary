@@ -191,11 +191,13 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdministrationController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RentalsController.cs" />
     <Compile Include="Controllers\RolesAdminController.cs" />
+    <Compile Include="Controllers\Tools1Controller.cs" />
     <Compile Include="Controllers\ToolsController.cs" />
     <Compile Include="Controllers\UserAdminController.cs" />
     <Compile Include="DAL\ToolDbContext.cs" />
@@ -331,11 +333,24 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\angle-grinder.jpg" />
     <Content Include="Images\attribute_image14481.jpg" />
     <Content Include="Images\attribute_image14560.jpg" />
     <Content Include="Images\attribute_image14594.jpg" />
+    <Content Include="Images\attribute_image3490878202380368782.jpg" />
     <Content Include="Images\attribute_image63118.jpg" />
+    <Content Include="Images\bike-pump.jpg" />
+    <Content Include="Images\circular-saw.jpg" />
     <Content Include="Images\green-hose.jpg" />
+    <Content Include="Images\Hedge-Shears-7.jpg" />
+    <Content Include="Images\long-handled-fan-rake-green.jpg" />
+    <Content Include="Images\Narrow-blade-trowel.jpg" />
+    <Content Include="Images\pipe-cutter.jpg" />
+    <Content Include="Images\pipe-wrench.jpg" />
+    <Content Include="Images\seed-spreader.jpg" />
+    <Content Include="Images\shop-vac.jpg" />
+    <Content Include="Images\snake.jpg" />
+    <Content Include="Images\west-seattle-tool-lending-library.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -419,13 +434,18 @@
     <Content Include="Views\Rentals\Details.cshtml" />
     <Content Include="Views\Rentals\Edit.cshtml" />
     <Content Include="Views\Rentals\Index.cshtml" />
+    <Content Include="Views\Tools1\Create.cshtml" />
+    <Content Include="Views\Tools1\Delete.cshtml" />
+    <Content Include="Views\Tools1\Details.cshtml" />
+    <Content Include="Views\Tools1\Edit.cshtml" />
+    <Content Include="Views\Tools1\Index.cshtml" />
+    <Content Include="Views\Administration\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Logic\" />
     <Folder Include="Services\" />
     <Folder Include="ViewModels\" />
-    <Folder Include="Views\Tools1\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

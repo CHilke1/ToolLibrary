@@ -1,17 +1,10 @@
 ﻿@model ToolLibrary.Models.Rental
 
 @{
-    Layout = null;
+    ViewBag.Title = "Index";
 }
 
-<!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Delete</title>
-</head>
-<body>
     <h3>Are you sure you want to delete this?</h3>
     <div>
         <h4>Rental</h4>
@@ -33,24 +26,14 @@
                 @Html.DisplayFor(model => model.DueDate)
             </dd>
     
-            <dt>
-                @Html.DisplayNameFor(model => model.UserID)
-            </dt>
-    
-            <dd>
-                @Html.DisplayFor(model => model.UserID)
-            </dd>
-    
         </dl>
     
         @using (Html.BeginForm()) {
             @Html.AntiForgeryToken()
     
             <div class="form-actions no-color">
-                <input type="submit" value="Delete" class="btn btn-default" /> |
+                <input type="submit" value="Return Item" class="btn btn-default" /> |
                 @Html.ActionLink("Back to List", "Index")
             </div>
         }
     </div>
-</body>
-</html>

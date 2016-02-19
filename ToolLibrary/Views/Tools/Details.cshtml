@@ -49,7 +49,7 @@
         </dt>
 
         <dd>
-            <img src="@Url.Content(Model.ImageUrl)" alt="Image" width="200" height="200" />
+            <img src="@Url.Content(Model.ImageUrl)" alt="Image" width="200" height="200" class="img-thumbnail" />
         </dd>
 
         <dt>
@@ -63,9 +63,9 @@
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    <a href="@Url.Action("Index", "Tools")?categoryId=@Model.CategoryId.ToString()">Back to List</a>
 </p>
-<p><a id="dropdown" class="btn btn-default" href="#" role="button">Check out</a></p>
+<p><a id="dropdown" class="btn btn-default btn-lg btn-block" href="#" role="button">Check out</a></p>
 
 
 <div class="dropdownwrap">
@@ -91,8 +91,9 @@
        {
             <text>
                 <script type="text/javascript">
+                    var categoryId=@Model.CategoryId;
                     alert('@Model.TriggerOnLoadMessage');
-                    window.location.href = '/Tools';
+                    window.location.href = '/Tools?CategoryId=' + categoryId;
                 </script>
             </text>
        }

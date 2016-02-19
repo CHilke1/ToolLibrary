@@ -10,7 +10,7 @@
 <h2>Tools</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @if (User.IsInRole("admin")) { Html.ActionLink("Create New", "Create"); }
 </p>
 <b>Filters:</b><br />
 <div data-bind="foreach: filter.filters">
@@ -47,9 +47,6 @@ Direction:
                 @Html.DisplayNameFor(model => model.Manufacturer)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Type)
             </th>
             <th>
@@ -63,16 +60,17 @@ Direction:
             <td><span data-bind="text: Name"></span></td>
             <td><span data-bind="text: Description"></span></td>
             <td><span data-bind="text: Manufacturer"></span></td>
-            <td><span data-bind="text: Category"></span></td>
             <td><span data-bind="text: Type"></span></td>
             <td><div data-bind="visible: IsCheckedOut">Checked Out.</div>
             <td>
                 <a data-bind="attr: { href: '@Url.Action("Details")/' + Id }"
                    class="btn btn-info">Details</a>
+                @if (User.IsInRole("admin")) { 
                 <a data-bind="attr: { href: '@Url.Action("Edit")/' + Id }"
-                   class="btn btn-primary">Edit</a>
+                   class="btn btn-primary">Edit</a> 
                 <a data-bind="attr: { href: '@Url.Action("Delete")/' + Id }"
                    class="btn btn-danger">Delete</a>
+                }
             </td>
         </tr>
     </tbody>

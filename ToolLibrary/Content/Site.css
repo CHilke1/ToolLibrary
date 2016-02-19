@@ -27,3 +27,11 @@ textarea {
     height:auto;
     display:none;
 }
+
+.bgSizeCover {
+    height: 200px;
+    background-image:url("../../Images/west-seattle-tool-lending-library.jpg");
+    background-size: cover;
+    border: 2px solid darkgray;
+    color: #000; text-shadow: 1px 1px 0 #fff;
+}

@@ -27,6 +27,7 @@ namespace ToolLibrary.Controllers
             if (categoryId == null)
             {
                 //var tools = db.Tools;
+                ViewBag.CategoryID = categoryId;
                 var tools = db.Tools.Include(t => t.Category);
                 return View(tools.ToList());
             }
@@ -71,6 +72,7 @@ namespace ToolLibrary.Controllers
                                             Name = t.Name,
                                             Description = t.Description,
                                             AdditionalDescription = t.AdditionalDescription,
+                                            CategoryId = t.CategoryId,
                                             Manufacturer = t.Manufacturer,
                                             ImageUrl = t.ImageUrl,
                                             Due = r.DueDate,
@@ -87,6 +89,7 @@ namespace ToolLibrary.Controllers
             viewModel.AdditionalDescription = tool.AdditionalDescription;
             viewModel.Manufacturer = tool.Manufacturer;
             viewModel.ImageUrl = tool.ImageUrl;
+            viewModel.CategoryId = tool.CategoryId;
             viewModel.Due = DateTime.MinValue;
             viewModel.AdditionalDescription = tool.Description;
             viewModel.TriggerOnLoad = false;
@@ -94,6 +97,7 @@ namespace ToolLibrary.Controllers
                  
             List<DateTime> ReservedDates = GetCheckedOutDates(tool.Id);
             viewModel.ReservedDates = ReservedDates;
+            ViewBag.CategoryId = tool.CategoryId;
             return View(viewModel);   
         }
 
@@ -168,10 +172,12 @@ namespace ToolLibrary.Controllers
             {
                 ReservedDates.Add(newCheckedOutDates);
             }
+            ViewBag.CategoryId = ViewBag.CategoryId;
             dt.ReservedDates = ReservedDates;
             dt.TriggerOnLoad = true;
             dt.TriggerOnLoadMessage = "Item checked out successfully!";
             dt.RedirectUrl = "Index";
+
             return View(dt);
         }
 
@@ -212,7 +218,8 @@ namespace ToolLibrary.Controllers
             {
                 return HttpNotFound();
             }
-            PopulateCategoriesDropDownList(tool.Category);
+            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", tool.CategoryId);
+            //PopulateCategoriesDropDownList(tool.Category);
             return View(tool);
         }
 
@@ -227,9 +234,12 @@ namespace ToolLibrary.Controllers
             {
                 db.Entry(tool).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                string redirectUrl = "Index?categoryId=?" + tool.CategoryId;
+                //return RedirectToAction(redirectUrl);
+                return RedirectToAction("Index", "Tools", new { categoryId = tool.CategoryId });
             }
-            PopulateCategoriesDropDownList(tool.CategoryId);
+            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", tool.CategoryId);
+            //PopulateCategoriesDropDownList(tool.CategoryId);
             return View(tool);
         }
 
@@ -294,6 +304,7 @@ namespace ToolLibrary.Controllers
             dt.Name = tool.Name;
             dt.Description = tool.Description;
             dt.AdditionalDescription = tool.AdditionalDescription;
+            dt.CategoryId = tool.CategoryId;
             dt.Due = dueDate;
             dt.ImageUrl = tool.ImageUrl;
             dt.Manufacturer = tool.Manufacturer;
