@@ -17,9 +17,13 @@ namespace ToolLibrary.Controllers
         private ToolDbContext db = new ToolDbContext();
 
         // GET: Rentals
-        public ActionResult Index()
+        public ActionResult Index(int? id)
         {
-            if (User.Identity.IsAuthenticated)
+            if (id == 0 && User.Identity.IsAuthenticated && User.IsInRole("admin"))
+            {
+                return View(db.Rentals.ToList());
+            }
+            else if (User.Identity.IsAuthenticated)
             {
                 string userID = User.Identity.GetUserId();
                 if (userID != null) {
@@ -30,7 +34,7 @@ namespace ToolLibrary.Controllers
             {
                 return RedirectToAction("Account/Login");
             }
-            return View(db.Rentals.ToList());
+            return View();
         }
 
         // GET: Rentals/Details/5
@@ -72,6 +76,7 @@ namespace ToolLibrary.Controllers
         }
 
         // GET: Rentals/Edit/5
+        [Authorize(Roles = "admin")]
         public ActionResult Edit(int? id)
         {
             if (id == null)

@@ -1,17 +1,23 @@
 ﻿@using Microsoft.AspNet.Identity
 @if (Request.IsAuthenticated)
 {
+    ToolLibrary.DAL.ToolDbContext _db = new ToolLibrary.DAL.ToolDbContext();
+    string id = User.Identity.GetUserId();
+    var rentals = _db.Rentals.Where(c => c.UserID == id).ToList();
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
     @Html.AntiForgeryToken()
-
     <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("My Rentals", "Index", "Rentals")<span class="badge">@rentals.Count</span></li> 
         <li>
             @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
         </li>
         <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+            
     </ul>
+    
     }
+
 }
 else
 {

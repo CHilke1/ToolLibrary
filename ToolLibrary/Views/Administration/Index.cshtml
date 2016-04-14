@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Contact";
+    ViewBag.Title = "Administration";
 }
 <h2>@ViewBag.Title.</h2>
 <h3>@ViewBag.Message</h3>
@@ -9,3 +9,12 @@
 <li>@Html.ActionLink("Create a Tool", "Create", "Tools")</li>
 <li>@Html.ActionLink("Create a Category", "Create", "Categories")</li>
 <li>@Html.ActionLink("View all Tools", "Index", "Tools")</li>
+<li>@Html.ActionLink(
+    "All Rentals",
+    "Index",
+    "Rentals",
+    new { id = 0 },
+    null
+)</li>
+    
+

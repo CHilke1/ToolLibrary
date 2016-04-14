@@ -25,9 +25,9 @@ namespace ToolLibrary.DAL
         public virtual DbSet<Tool> Tools { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Rental> Rentals { get; set; }
-        public virtual DbSet<Basket> Basket { get; set; }
-        public virtual DbSet<BasketItem> BasketItem { get; set; }
-        public virtual DbSet<Reservation> Reservations { get; set; }
+        //public virtual DbSet<Basket> Basket { get; set; }
+        //public virtual DbSet<BasketItem> BasketItem { get; set; }
+        //public virtual DbSet<Reservation> Reservations { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();

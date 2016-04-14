@@ -1,0 +1,58 @@
+﻿@model ToolLibrary.Models.Rental
+
+@{
+    ViewBag.Title = "Successful check out.";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>New Rental</title>
+</head>
+<body>
+    <div>
+        <h4>Rental</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Tool.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Tool.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Tool.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Tool.Description)
+            </dd>
+            <dt>
+                Image:
+            </dt>
+            <dd>
+                <img src="@Url.Content(Model.Tool.ImageUrl)" alt="Image" width="200" height="200" class="img-rounded" />
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.CheckedOut)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CheckedOut)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.DueDate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.DueDate)
+            </dd>
+
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Back to List", "Index", new { categoryId = Model.Tool.CategoryId }) |
+    </p>
+</body>
+</html>

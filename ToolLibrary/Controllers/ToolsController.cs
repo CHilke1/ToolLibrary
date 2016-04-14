@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using ToolLibrary.DAL;
 using ToolLibrary.Models;
 using Microsoft.AspNet.Identity;
+using System.Net.Mail;
+using PagedList;
 
 namespace ToolLibrary.Controllers
 {
@@ -18,40 +20,50 @@ namespace ToolLibrary.Controllers
 
         public ToolsController()
         {
-            //AutoMapper.Mapper.CreateMap<Tool, ToolViewModel>();
+           
         }
 
         // GET: Tools
-        public ActionResult Index(int? categoryId)
+        public ActionResult Index(int? categoryId, string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.DescriptionSortParm = sortOrder == "Description" ? "description_desc" : "description";
+            ViewBag.CategoryID = categoryId;
+            ViewBag.selectedCategoryId = categoryId;
+            if (searchString != null) {
+                page = 1;
+            }
+            else { searchString = currentFilter; }
+            ViewBag.CurrentFilter = searchString;
+
             if (categoryId == null)
             {
-                //var tools = db.Tools;
-                ViewBag.CategoryID = categoryId;
+                ViewBag.SelectedCategoryId = categoryId;
                 var tools = db.Tools.Include(t => t.Category);
-                return View(tools.ToList());
+                if (!String.IsNullOrEmpty(searchString))
+                    tools = Search(searchString, tools);
+                tools = Sort(sortOrder, tools);
+                int pageSize = 3;
+                int pageNumber = (page ?? 1);
+                return View(tools.ToPagedList(pageNumber, pageSize));
             }
             else
             {
-                //var tools = db.Tools;
-                //var tools = db.Tools.Include(t => t.Category);
                 var tools = db.Tools.Where(t => t.CategoryId == categoryId).Include(t => t.Category);
-                //var tools = db.Tools.
-                //Include("Category").
-                //Where(b => b.CategoryId == categoryId).
-                //OrderByDescending(b => b.Name).
-                //ToList();
-                //ViewBag.SelectedCategoryId = categoryId;
-                return View(tools.ToList());
+                if (!String.IsNullOrEmpty(searchString)) 
+                    tools = Search(searchString, tools); 
+                tools = Sort(sortOrder, tools);             
+                int pageSize = 3;
+                int pageNumber = (page ?? 1);
+                return View(tools.ToPagedList(pageNumber, pageSize));
             }   
-           
-            //return View(AutoMapper.Mapper.Map<List<Tool>, List<ToolViewModel>>(tools));
-            //return View(db.Tools.Include("Category").ToList());
         }
 
         // GET: Tools/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int? id, int? categoryId)
         {
+            ViewBag.selectedCategoryId = categoryId;
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -61,44 +73,49 @@ namespace ToolLibrary.Controllers
             {
                 return HttpNotFound();
             }
-            if (tool.IsCheckedOut) // is in rentals table
-            {
-                var checkedOutTool = (from t in db.Tools
-                                      join r in db.Rentals on t.Id equals r.Tool.Id
-                                      where t.Id == id
-                                      orderby r.CheckedOut
-                                      select new DetailViewModel {
-                                            Id = t.Id,
-                                            Name = t.Name,
-                                            Description = t.Description,
-                                            AdditionalDescription = t.AdditionalDescription,
-                                            CategoryId = t.CategoryId,
-                                            Manufacturer = t.Manufacturer,
-                                            ImageUrl = t.ImageUrl,
-                                            Due = r.DueDate,
-                                            TriggerOnLoad = false,
-                                            TriggerOnLoadMessage = "",}).FirstOrDefault();
-                checkedOutTool.ReservedDates = GetCheckedOutDates(checkedOutTool.Id);
-                return View(checkedOutTool);
-            }
-            
-            DetailViewModel viewModel = new DetailViewModel();
-            viewModel.Id = tool.Id;
-            viewModel.Name = tool.Name;
-            viewModel.Description = tool.Description;
-            viewModel.AdditionalDescription = tool.AdditionalDescription;
-            viewModel.Manufacturer = tool.Manufacturer;
-            viewModel.ImageUrl = tool.ImageUrl;
-            viewModel.CategoryId = tool.CategoryId;
-            viewModel.Due = DateTime.MinValue;
-            viewModel.AdditionalDescription = tool.Description;
-            viewModel.TriggerOnLoad = false;
-            viewModel.TriggerOnLoadMessage = "";
-                 
-            List<DateTime> ReservedDates = GetCheckedOutDates(tool.Id);
-            viewModel.ReservedDates = ReservedDates;
+
+            var checkedOutTool = (from t in db.Tools
+                                  join r in db.Rentals on t.Id equals r.Tool.Id
+                                  where t.Id == id
+                                  orderby r.CheckedOut
+                                  select t);
+
+            var rentals = (from r in db.Rentals
+                           where r.Tool.Id == id
+                           select r).ToList();
+
+            var detailViewModel = new DetailViewModel();
+            detailViewModel.tool = tool;
+            detailViewModel.CategoryId = Convert.ToInt16(categoryId);
             ViewBag.CategoryId = tool.CategoryId;
-            return View(viewModel);   
+            if (rentals.Count > 0)
+            {
+                detailViewModel.Rentals = rentals;
+                List<DateTime> reservedDates = GetCheckedOutDates(tool.Id);
+                detailViewModel.ReservedDates = reservedDates;
+                detailViewModel.TriggerOnLoad = false;
+                detailViewModel.TriggerOnLoadMessage = "";
+                return View(detailViewModel);
+            }
+            else
+            {
+                detailViewModel.Rentals = rentals;
+                detailViewModel.tool = tool;
+                detailViewModel.TriggerOnLoad = false;
+                detailViewModel.TriggerOnLoadMessage = "";
+                List <DateTime> ReservedDates = GetCheckedOutDates(tool.Id);
+                detailViewModel.ReservedDates = ReservedDates;              
+                return View(detailViewModel);
+            }
+                 
+            //DetailViewModel viewModel = new DetailViewModel();
+            //viewModel.tool = tool;
+            //detailViewModel.CategoryId = Convert.ToInt16(categoryId);
+                         
+            //List<DateTime> ReservedDates = GetCheckedOutDates(tool.Id);
+            //viewModel.ReservedDates = ReservedDates;
+            //ViewBag.CategoryId = tool.CategoryId;
+               
         }
 
         [HttpPost]
@@ -106,18 +123,10 @@ namespace ToolLibrary.Controllers
         public ActionResult Details(FormCollection form)
         {
             var userId = User.Identity.GetUserId();
-            DateTime checkedOut = new DateTime();
-            DateTime dueDate = new DateTime();
-
-            if (form["txtOut"].ToString() != "")
-            {
-                checkedOut = DateTime.Parse(form["txtOut"].ToString());
-            }
-
-            if (form["txtReturn"].ToString() != "")
-            {
-                dueDate = DateTime.Parse(form["txtReturn"].ToString()); 
-            }
+            DateTime checkedOut = DateTime.Parse(form["txtOut"]);
+            DateTime dueDate = DateTime.Parse(form["txtReturn"]);
+            ViewBag.CategoryId = form["categoryId"];
+            string categoryId = form["categoryId"];
             
             if (checkedOut == default(DateTime))
             {
@@ -127,21 +136,92 @@ namespace ToolLibrary.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            int? id = Convert.ToInt16(form["id"]);
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
+            int id = Convert.ToInt16(form["id"]);
+
             Tool tool = db.Tools.Find(id);
             if (tool == null)
             {
                 return HttpNotFound();
             }
 
-            Rental rental = new Rental();
-            
-            List<DateTime> ReservedDates = new List<DateTime>();
+            // Check whether checked out more than seven days.
+            TimeSpan difference = dueDate - checkedOut;
+            if (difference.TotalDays > 7)
+            {
+                TempData["isError"] = true;
+                TempData["Message"] = "Date range greater than 7 days.";
+                return RedirectToAction("Details", "Tools", new { id = id });
+            }
+
+            // Check to see if conflicts with another rental
+            List<Rental> rentalList = (from r in db.Rentals
+                                       where r.Tool.Id == id
+                                       select r).ToList();
+            if (rentalList.Count > 0)
+            {
+                // determine if already rented by user
+                foreach (Rental r in rentalList)
+                {
+                    if (r.UserID == userId)
+                    {
+                        TempData["isError"] = true;
+                        TempData["Message"] = "Item already checked out by user.";
+                        return RedirectToAction("Details", "Tools", new { id = id, categoryId = categoryId });
+                    }
+                }
+
+                Rental rental = new Rental();
+                rental.CheckedOut = checkedOut;
+                rental.DueDate = dueDate;
+                rental.Tool = tool;
+                rental.UserID = userId;
+                if (AllowedToAdd(rentalList, rental))
+                {
+                    tool.IsCheckedOut = true;
+                    db.Rentals.Add(rental);
+                    db.SaveChanges();
+                    db.Entry(tool).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return View("Checkout", rental);
+                }
+                else
+                {
+                    TempData["isError"] = true;
+                    TempData["Message"] = "Problem with checkout dates. Please verify no conflicts.";
+                    return RedirectToAction("Details", "Tools", new { id = id, categoryId = categoryId });
+                }               
+            }
+            else
+            {
+                List<DateTime> ReservedDates = new List<DateTime>();
+                ReservedDates = GetCheckedOutDates(tool.Id);
+
+                foreach (DateTime d in ReservedDates)
+                {
+                    if (dueDate >= d && checkedOut < d) //overlapping dates
+                    {
+                        TempData["isError"] = true;
+                        TempData["Message"] = "Problem with checkout dates. Please verify no conflicts.";
+                        return RedirectToAction("Details", "Tools", new { id = id, categoryId = categoryId });
+                    }
+                }
+                Rental rental = new Rental();
+                rental.CheckedOut = checkedOut;
+                rental.DueDate = dueDate;
+                rental.Tool = tool;
+                rental.UserID = userId;
+                tool.IsCheckedOut = true;
+                db.Rentals.Add(rental);
+                db.SaveChanges();
+                db.Entry(tool).State = EntityState.Modified;
+                db.SaveChanges();
+                return View("Checkout", rental);
+            }
+
+            /*List<DateTime> ReservedDates = new List<DateTime>();
             ReservedDates = GetCheckedOutDates(tool.Id);
+
             foreach (DateTime d in ReservedDates)
             {
                 if (dueDate >= d && checkedOut < d) //overlapping dates
@@ -155,16 +235,32 @@ namespace ToolLibrary.Controllers
                 } 
             }
 
-            // no overlap
-            rental.CheckedOut = checkedOut;
-            rental.DueDate = dueDate;
-            rental.UserID = userId;
-            rental.Tool = tool;
-            tool.IsCheckedOut = true;
-            db.Rentals.Add(rental);
-            db.SaveChanges();
-            db.Entry(tool).State = EntityState.Modified;
-            db.SaveChanges();
+
+
+            try
+            { // no overlap
+                rental.CheckedOut = checkedOut;
+                rental.DueDate = dueDate;
+                rental.UserID = userId;
+                rental.Tool = tool;
+                tool.IsCheckedOut = true;
+                db.Rentals.Add(rental);
+                db.SaveChanges();
+                db.Entry(tool).State = EntityState.Modified;
+                db.SaveChanges();
+
+                //send email
+            }
+            catch
+            {
+                DateTime due = ReservedDates.FirstOrDefault();
+                DetailViewModel dd = CreateDetailviewModel(tool, due);
+                dd.ReservedDates = ReservedDates;
+                dd.TriggerOnLoad = true;
+                dd.TriggerOnLoadMessage = "There was a problem creating this request. Please contact teh administrator.";
+                dd.RedirectUrl = "Details";
+                return View(dd);
+            };
 
             //return view model
             DetailViewModel dt = CreateDetailviewModel(tool, dueDate);           
@@ -178,7 +274,7 @@ namespace ToolLibrary.Controllers
             dt.TriggerOnLoadMessage = "Item checked out successfully!";
             dt.RedirectUrl = "Index";
 
-            return View(dt);
+            return View(dt);*/
         }
 
         // GET: Tools/Create
@@ -219,7 +315,6 @@ namespace ToolLibrary.Controllers
                 return HttpNotFound();
             }
             ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", tool.CategoryId);
-            //PopulateCategoriesDropDownList(tool.Category);
             return View(tool);
         }
 
@@ -235,11 +330,9 @@ namespace ToolLibrary.Controllers
                 db.Entry(tool).State = EntityState.Modified;
                 db.SaveChanges();
                 string redirectUrl = "Index?categoryId=?" + tool.CategoryId;
-                //return RedirectToAction(redirectUrl);
                 return RedirectToAction("Index", "Tools", new { categoryId = tool.CategoryId });
             }
             ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", tool.CategoryId);
-            //PopulateCategoriesDropDownList(tool.CategoryId);
             return View(tool);
         }
 
@@ -288,7 +381,7 @@ namespace ToolLibrary.Controllers
 
             foreach (var r in rentals)
             {
-                for (var dt = r.CheckedOut; dt <= r.DueDate; dt = dt.AddDays(1))
+                for (DateTime dt = r.CheckedOut; dt <= r.DueDate; dt = dt.AddDays(1))
                 {
                     dates.Add(dt);
                 }
@@ -300,22 +393,71 @@ namespace ToolLibrary.Controllers
         private DetailViewModel CreateDetailviewModel(Tool tool, DateTime dueDate)
         {
             DetailViewModel dt = new DetailViewModel();
-            dt.Id = tool.Id;
-            dt.Name = tool.Name;
-            dt.Description = tool.Description;
-            dt.AdditionalDescription = tool.AdditionalDescription;
-            dt.CategoryId = tool.CategoryId;
-            dt.Due = dueDate;
-            dt.ImageUrl = tool.ImageUrl;
-            dt.Manufacturer = tool.Manufacturer;
+            dt.tool = tool;
             return dt;
         }
-        private void PopulateCategoriesDropDownList(object selectedCategory = null)
+
+        [HttpPost]
+        public ActionResult Search(string searchString)
         {
-            var categoryQuery = from d in db.Categories
-                                   orderby d.Name
-                                   select d;
-            ViewBag.CategoryID = new SelectList(categoryQuery, "CategoryID", "Name", selectedCategory);
+            var movies = from m in db.Tools
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                movies = movies.Where(s => s.Name.Contains(searchString));
+            }
+
+            return View(movies);
+        }
+
+        private IQueryable<Tool> Search (string searchString, IQueryable<Tool> tools)
+        {
+            var toolSearchResult = tools.Where(s => s.Name.ToUpper().Contains(searchString.ToUpper()) || s.Description.ToUpper().Contains(searchString.ToUpper()));
+            return toolSearchResult;
+        }
+
+        private IQueryable<Tool> Sort (string sortOrder, IQueryable<Tool> tools)
+        {
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    tools = tools.OrderByDescending(s => s.Name);
+                    return tools;
+                case "description":
+                    tools = tools.OrderBy(s => s.Description);
+                    return tools;
+                case "description_desc":
+                    tools = tools.OrderByDescending(s => s.Description);
+                    return tools;
+                default:
+                    tools = tools.OrderBy(s => s.Name);
+                    return tools;
+            };
+        }
+
+        public bool AllowedToAdd(List<Rental> rentalList, Rental newRental)
+        {
+            bool OKToAdd = true;
+            DateTime Test_period_start = newRental.CheckedOut;
+            DateTime Test_period_end = newRental.DueDate;
+            foreach (Rental r in rentalList)
+            {
+                DateTime Base_period_start = r.CheckedOut;
+                DateTime Base_period_end = r.DueDate;
+                if (TimePeriodOverlap(Base_period_start, Base_period_end, Test_period_start, Test_period_end))
+                {
+                    OKToAdd = false;
+                }          
+            }
+            return OKToAdd;            
+        }
+
+        public bool TimePeriodOverlap(DateTime BS, DateTime BE, DateTime TS, DateTime TE)
+        {
+            return (
+                (TS >= BS && TS < BE) || (TE <= BE && TE > BS) || (TS <= BS && TE >= BE)
+            );
         }
     }
 }

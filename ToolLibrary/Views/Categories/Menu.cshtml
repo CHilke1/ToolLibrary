@@ -2,10 +2,9 @@
 @{
     var selectedCategoryId = ViewBag.SelectedCategoryId;
 }
-<div class="navbar navbar-default">
-    <h4 class="list-group-item-heading">Categories</h4>
+<ul class="nav nav-sidebar">
     @foreach (var category in Model)
     {
-        <a href="@Url.Action("Index", "Tools", new { categoryId = category.Id }, null)" class="list-group-item @if (selectedCategoryId == category.Id) { @Html.Raw("active") }">@category.Name</a>
+        <li class="@if (selectedCategoryId == category.Id) { @Html.Raw("active")}"><a href="@Url.Action("Index", "Tools", new { categoryId = category.Id })">@category.Name</a></li>
     }
-</div>
+</ul>

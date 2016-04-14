@@ -18,9 +18,10 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
@@ -53,6 +54,14 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -197,7 +206,6 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RentalsController.cs" />
     <Compile Include="Controllers\RolesAdminController.cs" />
-    <Compile Include="Controllers\Tools1Controller.cs" />
     <Compile Include="Controllers\ToolsController.cs" />
     <Compile Include="Controllers\UserAdminController.cs" />
     <Compile Include="DAL\ToolDbContext.cs" />
@@ -205,6 +213,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Logic\BasketActions.cs" />
     <Compile Include="Migrations\201602112359093_InitialCreate.cs" />
     <Compile Include="Migrations\201602112359093_InitialCreate.Designer.cs">
       <DependentUpon>201602112359093_InitialCreate.cs</DependentUpon>
@@ -265,9 +274,9 @@
     <Compile Include="Migrations\201602181635470_category7.Designer.cs">
       <DependentUpon>201602181635470_category7.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201602181647208_category8.cs" />
-    <Compile Include="Migrations\201602181647208_category8.Designer.cs">
-      <DependentUpon>201602181647208_category8.cs</DependentUpon>
+    <Compile Include="Migrations\201603272213027_revision.cs" />
+    <Compile Include="Migrations\201603272213027_revision.Designer.cs">
+      <DependentUpon>201603272213027_revision.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -283,6 +292,7 @@
     <Compile Include="Models\DetailViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Item.cs" />
+    <Compile Include="Models\MailModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Rental.cs" />
     <Compile Include="Models\Reservation.cs" />
@@ -295,7 +305,9 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\dashboard.css" />
     <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\PagedList.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -333,7 +345,10 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\A-Car-Jack.jpg" />
+    <Content Include="Images\aerator.jpg" />
     <Content Include="Images\angle-grinder.jpg" />
+    <Content Include="Images\appliance-roller.jpg" />
     <Content Include="Images\attribute_image14481.jpg" />
     <Content Include="Images\attribute_image14560.jpg" />
     <Content Include="Images\attribute_image14594.jpg" />
@@ -341,21 +356,28 @@
     <Content Include="Images\attribute_image63118.jpg" />
     <Content Include="Images\bike-pump.jpg" />
     <Content Include="Images\circular-saw.jpg" />
+    <Content Include="Images\drill-press.jpg" />
+    <Content Include="Images\Free_Library_Tools.jpg" />
     <Content Include="Images\green-hose.jpg" />
+    <Content Include="Images\hand-rake.jpg" />
     <Content Include="Images\Hedge-Shears-7.jpg" />
+    <Content Include="Images\ladder.jpg" />
     <Content Include="Images\long-handled-fan-rake-green.jpg" />
     <Content Include="Images\Narrow-blade-trowel.jpg" />
+    <Content Include="Images\Online-Donations.jpg" />
     <Content Include="Images\pipe-cutter.jpg" />
     <Content Include="Images\pipe-wrench.jpg" />
     <Content Include="Images\seed-spreader.jpg" />
     <Content Include="Images\shop-vac.jpg" />
     <Content Include="Images\snake.jpg" />
+    <Content Include="Images\Tools.jpg" />
     <Content Include="Images\west-seattle-tool-lending-library.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\database.js" />
     <Content Include="Scripts\Database2.js" />
+    <Content Include="Scripts\Dynamic.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -370,10 +392,13 @@
     <Content Include="Scripts\knockout-3.4.0.debug.js" />
     <Content Include="Scripts\knockout-3.4.0.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\Pages.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -434,16 +459,12 @@
     <Content Include="Views\Rentals\Details.cshtml" />
     <Content Include="Views\Rentals\Edit.cshtml" />
     <Content Include="Views\Rentals\Index.cshtml" />
-    <Content Include="Views\Tools1\Create.cshtml" />
-    <Content Include="Views\Tools1\Delete.cshtml" />
-    <Content Include="Views\Tools1\Details.cshtml" />
-    <Content Include="Views\Tools1\Edit.cshtml" />
-    <Content Include="Views\Tools1\Index.cshtml" />
     <Content Include="Views\Administration\Index.cshtml" />
+    <Content Include="Views\Tools\Search.cshtml" />
+    <Content Include="Views\Tools\Checkout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Logic\" />
     <Folder Include="Services\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
@@ -501,8 +522,8 @@
     <EmbeddedResource Include="Migrations\201602181635470_category7.resx">
       <DependentUpon>201602181635470_category7.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201602181647208_category8.resx">
-      <DependentUpon>201602181647208_category8.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201603272213027_revision.resx">
+      <DependentUpon>201603272213027_revision.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

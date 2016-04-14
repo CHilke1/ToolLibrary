@@ -61,9 +61,9 @@ namespace ToolLibrary
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            //    ClientId = "891279529350-cr5ueasic1cl5ktqjcbflbpo5886065j.apps.googleusercontent.com",
+           //    ClientSecret = "d9Qbq-5DqfJ8V4ns5Qz5_8hy"
+           // });
         }
     }
 }

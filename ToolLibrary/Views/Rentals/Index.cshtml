@@ -25,7 +25,8 @@
                 @Html.DisplayFor(modelItem => item.CheckedOut)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
+                @if (item.DueDate < DateTime.Now) { <span style="color:red">@Html.DisplayFor(modelItem => item.DueDate)</span> }
+                else { @Html.DisplayFor(modelItem => item.DueDate) }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Tool.Name)

@@ -1,88 +1,99 @@
 ﻿@model ToolLibrary.Models.DetailViewModel
-
+@using ToolLibrary.Models
 @{
     ViewBag.Title = "Details";
 }
 
 <h2>Details</h2>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
+<script src="~/Scripts/jquery-ui.min.js"></script>
 <div>
     <h4>Tool</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.tool.Name)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.tool.Name)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.tool.Description)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Description)
+            @Html.DisplayFor(model => model.tool.Description)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Manufacturer)
+            @Html.DisplayNameFor(model => model.tool.Manufacturer)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Manufacturer)
+            @Html.DisplayFor(model => model.tool.Manufacturer)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.AdditionalDescription)
+            @Html.DisplayNameFor(model => model.tool.AdditionalDescription)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.AdditionalDescription)
+            @Html.DisplayFor(model => model.tool.AdditionalDescription)
         </dd>
 
-        <dt>@if (Model != null && !String.IsNullOrEmpty(Model.ImageUrl))
+        <dt>@if (Model != null && !String.IsNullOrEmpty(Model.tool.ImageUrl))
         {
-            @Html.DisplayNameFor(model => model.ImageUrl)
+            @Html.DisplayNameFor(model => model.tool.ImageUrl)
         }
+        else { <span>Image not Available.</span> }
         </dt>
 
         <dd>
-            <img src="@Url.Content(Model.ImageUrl)" alt="Image" width="200" height="200" class="img-thumbnail" />
+            <img src="@Url.Content(Model.tool.ImageUrl)" alt="Image" width="200" height="200" class="img-rounded" />
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Due)
+            @*Html.DisplayNameFor(model => model.tool.Due)*@
         </dt>
 
-        <dd>@if (Model.Due == DateTime.MinValue) { <b>Item is available for checkout.</b> } else { @Html.DisplayFor(model => model.Due) }    
+        <dd>@*if (Model.ReservedDates.Due == DateTime.MinValue) { <b>Item is available for checkout.</b> } else { @Html.DisplayFor(model => model.Due) }*@    
         </dd>
 
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @if (User.IsInRole("admin")) { @Html.ActionLink("Edit", "Edit", new { id = Model.tool.Id }) } |
     <a href="@Url.Action("Index", "Tools")?categoryId=@Model.CategoryId.ToString()">Back to List</a>
 </p>
-<p><a id="dropdown" class="btn btn-default btn-lg btn-block" href="#" role="button">Check out</a></p>
-
-
-<div class="dropdownwrap">
-    <h2>Checkout Item</h2>
-    @using (Ajax.BeginForm("Details", "Tools", new AjaxOptions { UpdateTargetId = "divInterestDeatils" }))
+<div><table>
+    @if (Model.Rentals.Count > 0)
     {
-        <ol>
+        foreach (Rental r in Model.Rentals)
+        {
+            <tr><td>@r.CheckedOut</td><td>@r.DueDate</td></tr>
+        }
+
+    }
+</table></div>
+<div>
+    <h2>Checkout Item</h2>
+    @if (TempData["Message"] != null)
+    { <p>@TempData["Message"];</p> }
+    @using (Html.BeginForm("Details", "Tools", new { id = "target", name = "thisform" }))
+    {
+        <div><ol>
             <li>
                 @Html.Label("Begin Checkout")
-                @Html.TextBox("txtOut", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "from" })
+                @Html.TextBox("txtOut", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "from", @class = "form-control" })
             </li>
             <li>
                 @Html.Label("Return Date")
-                @Html.TextBox("txtReturn", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "to" })
+                @Html.TextBox("txtReturn", null, new { @Value = DateTime.Now.ToString("MM/dd/yyyy"), id = "to", @class = "form-control" })
             </li>
-            @Html.Hidden("id", @Model.Id)
-        </ol>
+            @Html.Hidden("id", @Model.tool.Id)
+            @Html.Hidden("categoryId", Model.CategoryId)
+        </ol></div>
         <button id="dropdown" button class="btn btn-default" type="submit">Check Out</button>
     }
 
@@ -91,9 +102,9 @@
        {
             <text>
                 <script type="text/javascript">
-                    var categoryId=@Model.CategoryId;
-                    alert('@Model.TriggerOnLoadMessage');
-                    window.location.href = '/Tools?CategoryId=' + categoryId;
+                    //var categoryId=@Model.CategoryId;
+                    //alert('@Model.TriggerOnLoadMessage');
+                    //window.location.href = '/Tools?CategoryId=' + categoryId;
                 </script>
             </text>
        }
@@ -110,7 +121,6 @@
                 @:disableddates.push("@d.ToString("MM/dd/yyyy")");
             };
         }
-        var disableddates2 = ["02/17/2016", "02/18/2016"];
 
         function DisableSpecificDates(date) {
             var string = jQuery.datepicker.formatDate('mm/dd/yy', date);
@@ -132,11 +142,7 @@
                 dates.not(this).datepicker("option", option, date);
             }
         });
-        $(document).ready(function () {
-            $("#dropdown").click(function () {
-                $(".dropdownwrap").slideToggle();
-            });
-        });
+
     </script>
 }
 
